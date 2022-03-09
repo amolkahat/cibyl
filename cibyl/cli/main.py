@@ -18,6 +18,11 @@ import sys
 from cibyl.orchestrator import Orchestrator
 from cibyl.utils.logger import configure_logging
 
+# CLASSMAP is used to map the plugins classes
+# with plugin name so it should be easy to
+# import while running.
+
+CLASSMAP = {"openstack": "Deployment"}
 
 def get_config_file_path(arguments):
     """Returns config file path if one was passed with --config argument
@@ -54,12 +59,36 @@ def get_config_log(arguments):
     return log_config
 
 
+def load_plugins(arguments):
+    """
+    :param arguments: A list of string respresenting the arguments and their
+                      values, defaults to None
+    """
+    plugin_name = []
+    for arg, value in enumerate(arguments[1:]):
+        if value == "--plugin":
+            plugin_name.append(arguments[arg + 2])
+        elif value == "-p":
+            plugin_name.append(arguments[arg + 2])
+    loaded_plugins = []
+    for plugin in plugin_name:
+        try:
+            loaded_plugins.append(
+                __import__(f"cibyl.plugins.{plugin}"))
+        except (ImportError, ModuleNotFoundError) as error:
+            raise ImportError(f"Failed to import: {plugin}") from error
+    return loaded_plugins
+
+
 def main():
     """CLI main entry."""
 
     # We parse it from sys.argv instead of argparse parser because we want
     # to run the app parser only once, after we update it with the loaded
     # arguments from the CI models based on the loaded configuration file
+
+    #plugins = load_plugins(sys.argv)
+    load_plugins(sys.argv)
     config_file_path = get_config_file_path(sys.argv)
     log_config = get_config_log(sys.argv)
     configure_logging(log_config)

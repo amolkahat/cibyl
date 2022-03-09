@@ -17,8 +17,8 @@
 from cibyl.cli.argument import Argument
 from cibyl.models.attribute import AttributeListValue
 from cibyl.models.model import Model
-from cibyl.models.openstack.node import Node
-from cibyl.models.openstack.service import Service
+from cibyl.plugins.openstack.node import Node
+from cibyl.plugins.openstack.service import Service
 
 # pylint: disable=too-few-public-methods
 # pylint: disable=no-member
@@ -42,14 +42,12 @@ class Deployment(Model):
             'attr_type': Node,
             'attribute_value_class': AttributeListValue,
             'arguments': [Argument(name='--nodes', arg_type=str,
-                          nargs='*',
                           description="Nodes on the deployment")]
         },
         'services': {
             'attr_type': Service,
             'attribute_value_class': AttributeListValue,
             'arguments': [Argument(name='--services', arg_type=str,
-                          nargs='*',
                           description="Services in the deployment")]
         }
     }

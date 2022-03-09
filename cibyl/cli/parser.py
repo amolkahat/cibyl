@@ -39,11 +39,11 @@ class CustomAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         if self.default and not values:
             values = self.default
-        setattr(namespace, self.dest, Argument(
-            name=self.dest, description=self.help, arg_type=self.type,
-            nargs=self.nargs, level=self.level, func=self.func,
-            populated=self.populated,
-            value=values))
+        setattr(namespace, self.dest,
+                Argument(name=self.dest, description=self.help,
+                         arg_type=self.type, nargs=self.nargs,
+                         level=self.level, func=self.func,
+                         populated=self.populated, value=values))
 
 
 class Parser:
@@ -93,11 +93,14 @@ class Parser:
         # the arguments we are not familiar with)
         known_arguments = self.argument_parser.parse_known_args(arguments)[0]
         # Keep only the used arguments
-        self.ci_args = {arg_name: arg_value for arg_name, arg_value in vars(
-            known_arguments).items() if isinstance(arg_value, Argument)}
-        self.app_args = {arg_name: arg_value for arg_name, arg_value in vars(
-            known_arguments).items() if arg_value and not isinstance(
-                arg_value, Argument)}
+        self.ci_args = {
+            arg_name: arg_value
+            for arg_name, arg_value in vars(known_arguments).items()
+            if isinstance(arg_value, Argument)}
+        self.app_args = {
+            arg_name: arg_value
+            for arg_name, arg_value in vars(known_arguments).items()
+            if arg_value and not isinstance(arg_value, Argument)}
 
     def get_group(self, group_name: str):
         """Returns the argument parser group based on a given group_name
